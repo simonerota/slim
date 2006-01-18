@@ -1,7 +1,7 @@
 /* SLiM - Simple Login Manager
    Copyright (C) 1997, 1998 Per Liden
-   Copyright (C) 2004-05 Simone Rota <sip@varlock.com>
-   Copyright (C) 2004-05 Johannes Winkelmann <jw@tks6.net>
+   Copyright (C) 2004-06 Simone Rota <sip@varlock.com>
+   Copyright (C) 2004-06 Johannes Winkelmann <jw@tks6.net>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,10 +17,13 @@
 #include <cstring>
 #include <cstdio>
 
+#include <iostream>
+#include <fstream>
 #include <sstream>
 #include <vector>
 #include <algorithm>
 #include "app.h"
+#include "numlock.h"
 #include "image.h"
 
 
@@ -165,6 +168,10 @@ void App::Run() {
 
 #ifndef XNEST_DEBUG
         OpenLog();
+		
+		if (cfg.getOption("daemon") == "yes") {
+			daemonmode = true;
+		}
 
         // Daemonize
         if (daemonmode) {
@@ -311,9 +318,14 @@ void App::Login() {
         // Login process starts here
         SwitchUser Su(pw, &cfg, DisplayName);
         string session = LoginPanel->getSession();
-	string loginCommand = cfg.getOption("login_cmd");
+        string loginCommand = cfg.getOption("login_cmd");
         replaceVariables(loginCommand, SESSION_VAR, session);
         replaceVariables(loginCommand, THEME_VAR, themeName);
+        string sessStart = cfg.getOption("sessionstart_cmd");
+        if (sessStart != "") {
+            replaceVariables(sessStart, USER_VAR, pw->pw_name);
+            system(sessStart.c_str());
+        }
         Su.Login(loginCommand.c_str());
         exit(OK_EXIT);
     }
@@ -330,6 +342,12 @@ void App::Login() {
     }
     if (WIFEXITED(status) && WEXITSTATUS(status)) {
         LoginPanel->Message("Failed to execute login command");
+    } else {
+         string sessStop = cfg.getOption("sessionstop_cmd");
+         if (sessStop != "") {
+            replaceVariables(sessStop, USER_VAR, pw->pw_name);
+            system(sessStop.c_str());
+        }
     }
 
     // Close all clients
@@ -582,7 +600,14 @@ int App::StartServer() {
         break;
     }
 
-    delete args;
+    string numlock = cfg.getOption("numlock");
+    if (numlock == "on") {
+        NumLock::setOn();
+    } else if (numlock == "off") {
+        NumLock::setOff();
+	}
+    
+	delete args;
 
     return ServerPID;
 }
@@ -700,17 +725,40 @@ void App::setBackground(const string& themedir) {
     XFlush(Dpy);
 }
 
-// Lock or die!
+// Check if there is a lockfile and a corresponding process
 void App::GetLock() {
-    int fd;
-    fd=open(cfg.getOption("lockfile").c_str(),O_WRONLY | O_CREAT | O_EXCL);
-    if (fd<0 && errno==EEXIST) {
-        cerr << APPNAME << ": It appears there is another instance of the program already running" <<endl
-            << "If not, try to remove the lockfile: " << cfg.getOption("lockfile") <<endl;
-        exit(ERR_EXIT);
-    } else if (fd < 0) {
-        cerr << APPNAME << ": Could not accesss lock file: " << cfg.getOption("lockfile") << endl;
-        exit(ERR_EXIT);
+    std::ifstream lockfile(cfg.getOption("lockfile").c_str());
+    if (!lockfile) {
+        // no lockfile present, create one
+        std::ofstream lockfile(cfg.getOption("lockfile").c_str(), ios_base::out);
+        if (!lockfile) {
+            cerr << APPNAME << ": Could not create lock file: " << cfg.getOption("lockfile").c_str() << std::endl;
+            exit(ERR_EXIT);
+        }
+        lockfile << getpid() << std::endl;
+        lockfile.close();
+    } else {
+        // lockfile present, read pid from it
+        int pid = 0;
+        lockfile >> pid;
+        lockfile.close();
+        if (pid > 0) {
+            // see if process with this pid exists
+            int ret = kill(pid, 0);
+            if (ret == 0 || (ret == -1 && errno == EPERM) ) {
+                cerr << APPNAME << ": Another instance of the program is already running with PID " << pid << std::endl;
+                exit(0);
+            } else {
+                cerr << APPNAME << ": Stale lockfile found, removing it" << std::endl;
+                std::ofstream lockfile(cfg.getOption("lockfile").c_str(), ios_base::out);
+                if (!lockfile) {
+                    cerr << APPNAME << ": Could not create new lock file: " << cfg.getOption("lockfile") << std::endl;
+                    exit(ERR_EXIT);
+                }
+                lockfile << getpid() << std::endl;
+                lockfile.close();
+            }
+        }
     }
 }
 

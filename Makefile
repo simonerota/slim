@@ -16,12 +16,12 @@ DESTDIR=
 #######################################################
 
 NAME=slim
-VERSION=1.2.3
+VERSION=1.2.4
 
 DEFINES=-DPACKAGE=\"$(NAME)\" -DVERSION=\"$(VERSION)\" \
 		-DPKGDATADIR=\"$(PREFIX)/share/slim\" -DSYSCONFDIR=\"$(CFGDIR)\"
 
-OBJECTS=jpeg.o png.o main.o image.o cfg.o switchuser.o input.o app.o panel.o
+OBJECTS=jpeg.o png.o main.o image.o numlock.o cfg.o switchuser.o input.o app.o panel.o
 
 all: slim
 
@@ -45,7 +45,7 @@ clean:
 dist:
 	@rm -rf $(NAME)-$(VERSION)
 	@mkdir $(NAME)-$(VERSION)
-	@cp -r *.cpp *.h *.c Makefile Makefile.* COPYING ChangeLog README TODO \
+	@cp -r *.cpp *.h *.c Makefile Makefile.* COPYING ChangeLog INSTALL README TODO \
 		xinitrc.sample slim.1 THEMES themes slim.conf $(NAME)-$(VERSION)
 	@rm -rf $(NAME)-$(VERSION)/themes/.svn	$(NAME)-$(VERSION)/themes/default/.svn
 	@tar cvzf $(NAME)-$(VERSION).tar.gz $(NAME)-$(VERSION)

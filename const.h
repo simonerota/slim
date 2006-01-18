@@ -1,7 +1,7 @@
 /* SLiM - Simple Login Manager
    Copyright (C) 1997, 1998 Per Liden
-   Copyright (C) 2004-05 Simone Rota <sip@varlock.com>
-   Copyright (C) 2004-05 Johannes Winkelmann <jw@tks6.net>
+   Copyright (C) 2004-06 Simone Rota <sip@varlock.com>
+   Copyright (C) 2004-06 Johannes Winkelmann <jw@tks6.net>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -48,5 +48,7 @@
 #define SESSION_VAR     "%session"
 #define THEME_VAR       "%theme"
 
-#endif
+// variables replaced in pre-session_cmd and post-session_cmd
+#define USER_VAR       "%user"
 
+#endif

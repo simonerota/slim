@@ -1,7 +1,7 @@
 /* SLiM - Simple Login Manager
    Copyright (C) 1997, 1998 Per Liden
-   Copyright (C) 2004-05 Simone Rota <sip@varlock.com>
-   Copyright (C) 2004-05 Johannes Winkelmann <jw@tks6.net>
+   Copyright (C) 2004-06 Simone Rota <sip@varlock.com>
+   Copyright (C) 2004-06 Johannes Winkelmann <jw@tks6.net>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ char Input::Key(char ascii, KeySym keysym, bool singleInputMode) {
         } else {
             Field = GET_NAME;
         }
-    } else if(keysym == XK_Return) {
+    } else if(keysym == XK_Return || keysym == XK_KP_Enter) {
         if(!strcmp(NameBuffer, ""))
             return tmp;
 
