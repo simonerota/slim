@@ -13,10 +13,11 @@
 
 using namespace std;
 
-SwitchUser::SwitchUser(struct passwd *pw, Cfg *c, const string& display)
+SwitchUser::SwitchUser(struct passwd *pw, Cfg *c, const string& display, char** _env)
     : cfg(c),
       Pw(pw),
-      displayName(display)
+      displayName(display),
+	  env(_env)
 {
 }
 
@@ -27,30 +28,9 @@ SwitchUser::~SwitchUser() {
 
 
 void SwitchUser::Login(const char* cmd, const char* mcookie) {
-    SetEnvironment();
     SetUserId();
     SetClientAuth(mcookie);
     Execute(cmd);
-}
-
-
-void SwitchUser::SetEnvironment() {
-    char *term = getenv("TERM");
-    char** environ;
-    environ = (char **) new char*[2];
-    environ[0] = 0;
-    if(term)
-        putenv(StrConcat("TERM=", term));
-    putenv(StrConcat("HOME=", Pw->pw_dir));
-    putenv(StrConcat("SHELL=", Pw->pw_shell));
-    putenv(StrConcat("USER=", Pw->pw_name));
-    putenv(StrConcat("LOGNAME=", Pw->pw_name));
-    putenv(StrConcat("PATH=", cfg->getOption("default_path").c_str()));
-    putenv(StrConcat("DISPLAY=", displayName.c_str()));
-    putenv(StrConcat("MAIL="_PATH_MAILDIR"/", Pw->pw_name));
-    putenv(StrConcat("XAUTHORITY=", StrConcat(Pw->pw_dir,"/.Xauthority")));
-    /* putenv("XAUTHORITY=/tmp/serverauth"); */
-    chdir(Pw->pw_dir);
 }
 
 
@@ -66,18 +46,8 @@ void SwitchUser::SetUserId() {
 
 
 void SwitchUser::Execute(const char* cmd) {
-    char *args[4];
-    char* shell = strdup(Pw->pw_shell);
-    char *shell_basename = BaseName(shell);
-
-    args[0] = new char[strlen(shell_basename) + 2];
-    strcpy(args[0], "-");
-    strcat(args[0], shell_basename);
-    args[1] = "-c";
-    args[2] = (char*)cmd;
-    args[3] = 0;
-
-    execv(shell, args);
+    chdir(Pw->pw_dir);
+    execle(Pw->pw_shell, Pw->pw_shell, "-c", cmd, NULL, env);
     cerr << APPNAME << ": could not execute login command" << endl;
 }
 
@@ -92,14 +62,6 @@ char* SwitchUser::BaseName(const char* name) {
     }
 
     return (char*) base;
-}
-
-
-char* SwitchUser::StrConcat(const char* str1, const char* str2) {
-    char* tmp = new char[strlen(str1) + strlen(str2) + 1];
-    strcpy(tmp, str1);
-    strcat(tmp, str2);
-    return tmp;
 }
 
 void SwitchUser::SetClientAuth(const char* mcookie) {

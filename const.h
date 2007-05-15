@@ -26,15 +26,6 @@
 #define HIDE		0
 #define SHOW		1
 
-#define WAIT		0
-#define LOGIN		1
-#define FAIL		2
-#define CONSOLE		3
-#define REBOOT		4
-#define HALT		5
-#define EXIT		6
-#define SUSPEND		7
-
 #define GET_NAME    0
 #define GET_PASSWD	1
 
