@@ -34,18 +34,18 @@
 
 class Panel {
 public:
-	enum ActionType {
-		Login,
-		Console,
-		Reboot,
-		Halt,
-		Exit,
-		Suspend
-	};
-	enum FieldType {
-		Get_Name,
-		Get_Passwd
-	};
+    enum ActionType {
+        Login,
+        Console,
+        Reboot,
+        Halt,
+        Exit,
+        Suspend
+    };
+    enum FieldType {
+        Get_Name,
+        Get_Passwd
+    };
 
 
     Panel(Display* dpy, int scr, Window root, Cfg* config,
@@ -58,14 +58,14 @@ public:
     void Error(const string& text);
     void EventHandler(const FieldType& curfield);
     string getSession();
-	ActionType getAction(void) const;
+    ActionType getAction(void) const;
 
-	void Reset(void);
-	void ResetName(void);
-	void ResetPasswd(void);
-	void SetName(const string& name);
-	const string& GetName(void) const;
-	const string& GetPasswd(void) const;
+    void Reset(void);
+    void ResetName(void);
+    void ResetPasswd(void);
+    void SetName(const string& name);
+    const string& GetName(void) const;
+    const string& GetPasswd(void) const;
 private:
     Panel();
     void Cursor(int visible);
@@ -76,9 +76,9 @@ private:
     void SwitchSession();
     void ShowSession();
 
-	void SlimDrawString8(XftDraw *d, XftColor *color, XftFont *font,
+    void SlimDrawString8(XftDraw *d, XftColor *color, XftFont *font,
                             int x, int y, const string& str,
-							XftColor* shadowColor,
+                            XftColor* shadowColor,
                             int xOffset, int yOffset);
 
     Cfg* cfg;
@@ -104,13 +104,13 @@ private:
     XftFont* enterfont;
     XftColor entercolor;
     XftColor entershadowcolor;
-	ActionType action;
-	FieldType field;
-	
-	// Username/Password
-	string NameBuffer;
-	string PasswdBuffer;
-	string HiddenPasswdBuffer;
+    ActionType action;
+    FieldType field;
+    
+    // Username/Password
+    string NameBuffer;
+    string PasswdBuffer;
+    string HiddenPasswdBuffer;
 
     // Configuration
     int input_name_x;

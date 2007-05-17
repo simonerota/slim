@@ -8,7 +8,7 @@
    the Free Software Foundation; either version 2 of the License, or
    (at your option) any later version.
 */
-
+    
 #ifndef _SWITCHUSER_H_
 #define _SWITCHUSER_H_
 
@@ -40,7 +40,7 @@ private:
     struct passwd *Pw;
 
     std::string displayName;
-	char** env;
+    char** env;
 };
 
 
