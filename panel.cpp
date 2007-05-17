@@ -77,8 +77,8 @@ Panel::Panel(Display* dpy, int scr, Window root, Cfg* config,
         loaded = image->Read(panelpng.c_str());
         if (!loaded) {
             cerr << APPNAME << ": could not load panel image for theme '"
-		 << basename((char*)themedir.c_str()) << "'"
-		 << endl;
+         << basename((char*)themedir.c_str()) << "'"
+         << endl;
             exit(ERR_EXIT);
         }
     }
@@ -93,8 +93,8 @@ Panel::Panel(Display* dpy, int scr, Window root, Cfg* config,
             loaded = bg->Read(panelpng.c_str());
             if (!loaded){
                 cerr << APPNAME << ": could not load background image for theme '"
-		        << basename((char*)themedir.c_str()) << "'"
-		        << endl;
+                << basename((char*)themedir.c_str()) << "'"
+                << endl;
                 exit(ERR_EXIT);
             }
         }
@@ -104,15 +104,15 @@ Panel::Panel(Display* dpy, int scr, Window root, Cfg* config,
     } else if (bgstyle == "tile") {
         bg->Tile(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)), XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)));
     } else if (bgstyle == "center") {
- 	    string hexvalue = cfg->getOption("background_color");
+        string hexvalue = cfg->getOption("background_color");
         hexvalue = hexvalue.substr(1,6);
-  	    bg->Center(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)), XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)),
-       			    hexvalue.c_str());
+        bg->Center(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)), XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)),
+                    hexvalue.c_str());
     } else { // plain color or error
-	    string hexvalue = cfg->getOption("background_color");
+        string hexvalue = cfg->getOption("background_color");
         hexvalue = hexvalue.substr(1,6);
-  	    bg->Center(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)), XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)),
-    			    hexvalue.c_str());
+        bg->Center(XWidthOfScreen(ScreenOfDisplay(Dpy, Scr)), XHeightOfScreen(ScreenOfDisplay(Dpy, Scr)),
+                    hexvalue.c_str());
     }
 
     string cfgX = cfg->getOption("input_panel_x");
@@ -178,7 +178,7 @@ void Panel::ClosePanel() {
 
 void Panel::ClearPanel() {
     session = "";
-	Reset();
+    Reset();
     XClearWindow(Dpy, Root);
     XClearWindow(Dpy, Win);
     Cursor(SHOW);
@@ -253,11 +253,11 @@ void Panel::Cursor(int visible) {
             yy = input_name_y;
             break;
 
-		default: /* Origin & NULL string as default values. */
-			text = (char *)NULL;
-			xx = (int)0;
-			yy = (int)0;
-			break;
+        default: /* Origin & NULL string as default values. */
+            text = (char *)NULL;
+            xx = (int)0;
+            yy = (int)0;
+            break;
     }
 
 
@@ -282,10 +282,10 @@ void Panel::Cursor(int visible) {
 
 void Panel::EventHandler(const Panel::FieldType& curfield) {
     XEvent event;
-	field=curfield;
-	bool loop = true;
-	XClearWindow(Dpy, Win);
-	OnExpose();
+    field=curfield;
+    bool loop = true;
+    XClearWindow(Dpy, Win);
+    OnExpose();
     for(;;) {
         XNextEvent(Dpy, &event);
         switch(event.type) {
@@ -297,7 +297,7 @@ void Panel::EventHandler(const Panel::FieldType& curfield) {
                 loop=OnKeyPress(event);
                 break;
         }
-		if (!loop) break;
+        if (!loop) break;
     }
 
     return;
@@ -346,80 +346,80 @@ bool Panel::OnKeyPress(XEvent& event) {
     XComposeStatus compstatus;
     int xx;
     int yy;
-	string text;
+    string text;
     
     XLookupString(&event.xkey, &ascii, 1, &keysym, &compstatus);
     Cursor(HIDE);
-	switch(keysym){
-		case XK_F1:
-	        SwitchSession();
-			return true;
+    switch(keysym){
+        case XK_F1:
+            SwitchSession();
+            return true;
 
-		case XK_F11:
-			// Take a screenshot
-			system(cfg->getOption("screenshot_cmd").c_str());
-			return true;
+        case XK_F11:
+            // Take a screenshot
+            system(cfg->getOption("screenshot_cmd").c_str());
+            return true;
 
-		case XK_Return:
-		case XK_KP_Enter:
-			if (field==Get_Name){
-				// Don't allow an empty username
-				if (NameBuffer.empty()) break;
+        case XK_Return:
+        case XK_KP_Enter:
+            if (field==Get_Name){
+                // Don't allow an empty username
+                if (NameBuffer.empty()) break;
 
-				if (NameBuffer==CONSOLE_STR){
-					action = Console;
-				} else if (NameBuffer==HALT_STR){
-					action = Halt;
-				} else if (NameBuffer==REBOOT_STR){
-					action = Reboot;
-				} else if (NameBuffer==SUSPEND_STR){
-					action = Suspend;
-				} else if (NameBuffer==EXIT_STR){
-					action = Exit;
-				} else{
-					action = Login;
-				}
-			};
-			return false;
+                if (NameBuffer==CONSOLE_STR){
+                    action = Console;
+                } else if (NameBuffer==HALT_STR){
+                    action = Halt;
+                } else if (NameBuffer==REBOOT_STR){
+                    action = Reboot;
+                } else if (NameBuffer==SUSPEND_STR){
+                    action = Suspend;
+                } else if (NameBuffer==EXIT_STR){
+                    action = Exit;
+                } else{
+                    action = Login;
+                }
+            };
+            return false;
 
-		case XK_Delete:
-		case XK_BackSpace:
-			switch(field) {
-			    case GET_NAME:
-					if (! NameBuffer.empty()){
-						del=NameBuffer.at(NameBuffer.length()-1);
-						NameBuffer.erase(--NameBuffer.end());
-					};
-					break;
-			    case GET_PASSWD:
-					if (! PasswdBuffer.empty()){
-						del='*';
-						PasswdBuffer.erase(--PasswdBuffer.end());
-						HiddenPasswdBuffer.erase(--HiddenPasswdBuffer.end());
-					};
-					break;
-			};
-			break;
+        case XK_Delete:
+        case XK_BackSpace:
+            switch(field) {
+                case GET_NAME:
+                    if (! NameBuffer.empty()){
+                        del=NameBuffer.at(NameBuffer.length()-1);
+                        NameBuffer.erase(--NameBuffer.end());
+                    };
+                    break;
+                case GET_PASSWD:
+                    if (! PasswdBuffer.empty()){
+                        del='*';
+                        PasswdBuffer.erase(--PasswdBuffer.end());
+                        HiddenPasswdBuffer.erase(--HiddenPasswdBuffer.end());
+                    };
+                    break;
+            };
+            break;
 
-		default:
-			if (isprint(ascii) && (keysym < XK_Shift_L || keysym > XK_Hyper_R)){
-				switch(field) {
-				    case GET_NAME:
-						if (NameBuffer.length() < INPUT_MAXLENGTH_NAME-1){
-							NameBuffer.append(&ascii,1);
-						};
-						break;
-				    case GET_PASSWD:
-						if (PasswdBuffer.length() < INPUT_MAXLENGTH_NAME-1){
-							PasswdBuffer.append(&ascii,1);
-							HiddenPasswdBuffer.append("*");
-						};
-					break;
-				};
-			};
-			del=0;
-			break;
-	};
+        default:
+            if (isprint(ascii) && (keysym < XK_Shift_L || keysym > XK_Hyper_R)){
+                switch(field) {
+                    case GET_NAME:
+                        if (NameBuffer.length() < INPUT_MAXLENGTH_NAME-1){
+                            NameBuffer.append(&ascii,1);
+                        };
+                        break;
+                    case GET_PASSWD:
+                        if (PasswdBuffer.length() < INPUT_MAXLENGTH_NAME-1){
+                            PasswdBuffer.append(&ascii,1);
+                            HiddenPasswdBuffer.append("*");
+                        };
+                    break;
+                };
+            };
+            del=0;
+            break;
+    };
 
     bool singleInputMode =
         input_name_x == input_pass_x &&
@@ -455,8 +455,8 @@ bool Panel::OnKeyPress(XEvent& event) {
 
             if (clearField) {
                 formerString = HiddenPasswdBuffer;
-				HiddenPasswdBuffer.clear();
-				PasswdBuffer.clear();
+                HiddenPasswdBuffer.clear();
+                PasswdBuffer.clear();
             }
             text = HiddenPasswdBuffer;
             xx = input_pass_x;
@@ -466,18 +466,18 @@ bool Panel::OnKeyPress(XEvent& event) {
         case Get_Name:
             if (clearField) {
                 formerString = NameBuffer;
-				NameBuffer.clear();
+                NameBuffer.clear();
             }
             text = NameBuffer;
             xx = input_name_x;
             yy = input_name_y;
             break;
 
-		default: /* Origin & NULL string as default values. */
-			text = (char *)NULL;
-			xx = (int)0;
-			yy = (int)0;
-			break;
+        default: /* Origin & NULL string as default values. */
+            text = (char *)NULL;
+            xx = (int)0;
+            yy = (int)0;
+            break;
     }
 
     char* txth = "Wj"; // get proper maximum height ?
@@ -507,7 +507,7 @@ bool Panel::OnKeyPress(XEvent& event) {
 
     XftDrawDestroy (draw);
     Cursor(SHOW);
-	return true;
+    return true;
 }
 
 // Draw welcome and "enter username" message
@@ -619,7 +619,7 @@ void Panel::ShowSession() {
 
 void Panel::SlimDrawString8(XftDraw *d, XftColor *color, XftFont *font,
                             int x, int y, const string& str,
-							XftColor* shadowColor,
+                            XftColor* shadowColor,
                             int xOffset, int yOffset)
 {
     if (xOffset && yOffset) {
@@ -631,31 +631,31 @@ void Panel::SlimDrawString8(XftDraw *d, XftColor *color, XftFont *font,
 
 
 Panel::ActionType Panel::getAction(void) const{
-	return action;
+    return action;
 };
 
 
 void Panel::Reset(void){
-	ResetName();
-	ResetPasswd();
+    ResetName();
+    ResetPasswd();
 };
 
 void Panel::ResetName(void){
-	NameBuffer.clear();
+    NameBuffer.clear();
 };
 
 void Panel::ResetPasswd(void){
-	PasswdBuffer.clear();
-	HiddenPasswdBuffer.clear();
+    PasswdBuffer.clear();
+    HiddenPasswdBuffer.clear();
 };
 
 void Panel::SetName(const string& name){
-	NameBuffer=name;
-	return;
+    NameBuffer=name;
+    return;
 };
 const string& Panel::GetName(void) const{
-	return NameBuffer;
+    return NameBuffer;
 };
 const string& Panel::GetPasswd(void) const{
-	return PasswdBuffer;
+    return PasswdBuffer;
 };

@@ -107,7 +107,7 @@ Cfg::Cfg()
 }
 
 Cfg::~Cfg() {
-	options.clear();
+    options.clear();
 }
 /*
  * Creates the Cfg object and parses
@@ -229,14 +229,14 @@ void Cfg::split(vector<string>& v, const string& str, char c, bool useEmpty) {
     while (true) {
         string::const_iterator begin = s;
         while (*s != c && s != str.end()) { ++s; }
-	tmp = string(begin, s);
-	if (useEmpty || tmp.size() > 0)
+    tmp = string(begin, s);
+    if (useEmpty || tmp.size() > 0)
             v.push_back(tmp);
         if (s == str.end()) {
             break;
         }
         if (++s == str.end()) {
-	    if (useEmpty)
+        if (useEmpty)
                 v.push_back("");
             break;
         }

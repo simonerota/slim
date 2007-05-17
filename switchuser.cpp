@@ -17,7 +17,7 @@ SwitchUser::SwitchUser(struct passwd *pw, Cfg *c, const string& display, char** 
     : cfg(c),
       Pw(pw),
       displayName(display),
-	  env(_env)
+      env(_env)
 {
 }
 
