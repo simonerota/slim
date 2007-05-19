@@ -34,7 +34,6 @@ private:
     void SetEnvironment();
     void SetUserId();
     void Execute(const char* cmd);
-    char* BaseName(const char* name);
     void SetClientAuth(const char* mcookie);
     Cfg* cfg;
     struct passwd *Pw;

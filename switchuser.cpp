@@ -51,19 +51,6 @@ void SwitchUser::Execute(const char* cmd) {
     cerr << APPNAME << ": could not execute login command" << endl;
 }
 
-
-char* SwitchUser::BaseName(const char* name) {
-    const char *base = name;
-
-    while(*name) {
-        if(*name == '/')
-            base = name + 1;
-        ++name;
-    }
-
-    return (char*) base;
-}
-
 void SwitchUser::SetClientAuth(const char* mcookie) {
     int r;
     string home = string(Pw->pw_dir);
