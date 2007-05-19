@@ -13,7 +13,8 @@
 
 using namespace std;
 
-SwitchUser::SwitchUser(struct passwd *pw, Cfg *c, const string& display, char** _env)
+SwitchUser::SwitchUser(struct passwd *pw, Cfg *c, const string& display,
+                       char** _env)
     : cfg(c),
       Pw(pw),
       displayName(display),

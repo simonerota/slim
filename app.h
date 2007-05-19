@@ -35,7 +35,7 @@ public:
     void Run();
     int GetServerPID();
     void StopServer();
-	
+
     // Lock functions
     void GetLock();
     void RemoveLock();
@@ -57,7 +57,7 @@ private:
     char* StrConcat(const char* str1, const char* str2);
     void UpdatePid();
 
-	bool Auth(void);
+    bool AuthenticateUser(void);
  
     static std::string findValidRandomTheme(const std::string& set);
     static void replaceVariables(std::string& input,

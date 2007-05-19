@@ -282,7 +282,7 @@ void Panel::EventHandler(const Panel::FieldType& curfield) {
     field=curfield;
     bool loop = true;
     OnExpose();
-    for(;;) {
+    while(loop) {
         XNextEvent(Dpy, &event);
         switch(event.type) {
             case Expose:
@@ -293,7 +293,6 @@ void Panel::EventHandler(const Panel::FieldType& curfield) {
                 loop=OnKeyPress(event);
                 break;
         }
-        if (!loop) break;
     }
 
     return;

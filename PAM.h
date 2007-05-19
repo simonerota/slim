@@ -1,4 +1,6 @@
 /* SLiM - Simple Login Manager
+   Copyright (C) 2007 Martin Parm
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
@@ -17,21 +19,21 @@ namespace PAM {
         int errnum;
         std::string errstr;
         std::string func_name;
-        Exception(pam_handle_t* _pamh,
+        Exception(pam_handle_t* _pam_handle,
                   const std::string& _func_name,
                   int _errnum);
     };
 
     class Auth_Exception: public Exception{
     public:
-        Auth_Exception(pam_handle_t* _pamh,
+        Auth_Exception(pam_handle_t* _pam_handle,
                        const std::string& _func_name,
                        int _errnum);
     };
 
     class Cred_Exception: public Exception{
     public:
-        Cred_Exception(pam_handle_t* _pamh,
+        Cred_Exception(pam_handle_t* _pam_handle,
                        const std::string& _func_name,
                        int _errnum);
     };
@@ -40,7 +42,7 @@ namespace PAM {
     class Authenticator{
     private:
         struct pam_conv pam_conversation;
-        pam_handle_t* pamh;
+        pam_handle_t* pam_handle;
         int last_result;
 
         int _end(void);

@@ -77,7 +77,7 @@ int conv(int num_msg, const struct pam_message **msg,
 
             case PAM_ERROR_MSG:
             case PAM_TEXT_INFO:
-                // We simply right these to the log
+                // We simply write these to the log
                 // TODO: Maybe we should simply ignore them
                 cerr << APPNAME << ": " << msg[i]->msg << endl;
                 break;
@@ -333,7 +333,7 @@ void App::Run() {
         }
 
 
-        if (!Auth()){
+        if (!AuthenticateUser()){
             panelclosed = 0;
             LoginPanel->ClearPanel();
             XBell(Dpy, 100);
@@ -373,9 +373,7 @@ void App::Run() {
 }
 
 #ifdef USE_PAM
-bool App::Auth(void){
-    int last_result;
-
+bool App::AuthenticateUser(void){
     // Reset the username
     try{
         pam.set_item(PAM::Authenticator::User, 0);
@@ -399,7 +397,7 @@ bool App::Auth(void){
     return true;
 }
 #else
-bool App::Auth(void){
+bool App::AuthenticateUser(void){
     LoginPanel->EventHandler(Panel::Get_Name);
     switch(LoginPanel->getAction()){
         case Panel::Exit:
@@ -444,7 +442,7 @@ bool App::Auth(void){
 
     encrypted = crypt(LoginPanel->GetPasswd().c_str(), correct);
     return ((strcmp(encrypted, correct) == 0) ? true : false);
-};
+}
 #endif
 
 
@@ -535,7 +533,8 @@ void App::Login() {
         char** child_env = pam.getenvlist();
         pam.end();
 #else
-        char** child_env = static_cast<char**>(malloc(sizeof(char*)*10));
+        const int Num_Of_Variables = 10; // Number of env. variables + 1
+        char** child_env = static_cast<char**>(malloc(sizeof(char*)*Num_of_Variables));
         int n = 0;
         if(term) child_env[n++]=StrConcat("TERM=", term);
         child_env[n++]=StrConcat("HOME=", pw->pw_dir);
