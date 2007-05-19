@@ -534,7 +534,7 @@ void App::Login() {
         pam.end();
 #else
         const int Num_Of_Variables = 10; // Number of env. variables + 1
-        char** child_env = static_cast<char**>(malloc(sizeof(char*)*Num_of_Variables));
+        char** child_env = static_cast<char**>(malloc(sizeof(char*)*Num_Of_Variables));
         int n = 0;
         if(term) child_env[n++]=StrConcat("TERM=", term);
         child_env[n++]=StrConcat("HOME=", pw->pw_dir);
