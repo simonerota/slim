@@ -126,6 +126,11 @@ namespace PAM {
         }
 
         switch((last_result=pam_acct_mgmt(pam_handle, PAM_SILENT))){
+            // The documentation and implementation of Linux PAM differs:
+            // PAM_NEW_AUTHTOKEN_REQD is described in the documentation but
+            // don't exists in the actual implementation. This issue needs
+            // to be fixes at some point.
+
             default:
             //case PAM_NEW_AUTHTOKEN_REQD:
             case PAM_ACCT_EXPIRED:
@@ -160,6 +165,11 @@ namespace PAM {
         }
 
         switch((last_result=pam_open_session(pam_handle, 0))){
+            // The documentation and implementation of Linux PAM differs:
+            // PAM_SESSION_ERROR is described in the documentation but
+            // don't exists in the actual implementation. This issue needs
+            // to be fixes at some point.
+
             default:
             //case PAM_SESSION_ERROR:
                 pam_setcred(pam_handle, PAM_DELETE_CRED);
@@ -174,6 +184,11 @@ namespace PAM {
 
     void Authenticator::close_session(void){
         switch((last_result=pam_close_session(pam_handle, 0))){
+            // The documentation and implementation of Linux PAM differs:
+            // PAM_SESSION_ERROR is described in the documentation but
+            // don't exists in the actual implementation. This issue needs
+            // to be fixes at some point.
+
             default:
             //case PAM_SESSION_ERROR:
                 pam_setcred(pam_handle, PAM_DELETE_CRED);
