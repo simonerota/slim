@@ -19,6 +19,8 @@ namespace PAM {
         func_name(_func_name)
         {}
 
+    Exception::~Exception(void){}
+
     Auth_Exception::Auth_Exception(pam_handle_t* _pam_handle,
                                    const std::string& _func_name,
                                    int _errnum):
@@ -35,7 +37,10 @@ namespace PAM {
         return result;
     }
 
-    Authenticator::Authenticator(conversation* conv, void* data):pam_handle(0){
+    Authenticator::Authenticator(conversation* conv, void* data):
+        pam_handle(0),
+        last_result(PAM_SUCCESS)
+    {
         pam_conversation.conv=conv;
         pam_conversation.appdata_ptr=data;
     }
@@ -84,7 +89,9 @@ namespace PAM {
         switch ((last_result=pam_get_item(pam_handle, item, &data))){
             default:
             case PAM_SYSTEM_ERR:
+#ifdef __LIBPAM_VERSION
             case PAM_BAD_ITEM:
+#endif
                 _end();
                 throw Exception(pam_handle, "pam_get_item()", last_result);
 
@@ -95,6 +102,7 @@ namespace PAM {
         return data;
     }
 
+#ifdef __LIBPAM_VERSION
     void Authenticator::fail_delay(const unsigned int micro_sec){
         switch((last_result=pam_fail_delay(pam_handle, micro_sec))){
             default:
@@ -106,6 +114,7 @@ namespace PAM {
         }
         return;
     }
+#endif
 
     void Authenticator::authenticate(void){
         switch((last_result=pam_authenticate(pam_handle, 0))){
@@ -218,9 +227,11 @@ namespace PAM {
         switch((last_result=pam_putenv(pam_handle, name_value.c_str()))){
             default:
             case PAM_PERM_DENIED:
-            case PAM_BAD_ITEM:
             case PAM_ABORT:
             case PAM_BUF_ERR:
+#ifdef __LIBPAM_VERSION
+            case PAM_BAD_ITEM:
+#endif
                 _end();
                 throw Exception(pam_handle, "pam_putenv()", last_result);
 
@@ -234,9 +245,11 @@ namespace PAM {
         switch((last_result=pam_putenv(pam_handle, key.c_str()))){
             default:
             case PAM_PERM_DENIED:
-            case PAM_BAD_ITEM:
             case PAM_ABORT:
             case PAM_BUF_ERR:
+#ifdef __LIBPAM_VERSION
+            case PAM_BAD_ITEM:
+#endif
                 _end();
                 throw Exception(pam_handle, "pam_putenv()", last_result);
 

@@ -22,6 +22,7 @@ namespace PAM {
         Exception(pam_handle_t* _pam_handle,
                   const std::string& _func_name,
                   int _errnum);
+        virtual ~Exception(void);
     };
 
     class Auth_Exception: public Exception{
@@ -60,7 +61,9 @@ namespace PAM {
             Requestor   = PAM_RUSER,
             Host        = PAM_RHOST,
             Conv        = PAM_CONV,
-            Fail_Delay  = PAM_FAIL_DELAY
+#ifdef __LIBPAM_VERSION
+            //Fail_Delay  = PAM_FAIL_DELAY
+#endif
         };
 
     public:
@@ -71,7 +74,9 @@ namespace PAM {
         void end(void);
         void set_item(const ItemType item, const void* value);
         const void* get_item(const ItemType item);
+#ifdef __LIBPAM_VERSION
         void fail_delay(const unsigned int micro_sec);
+#endif
         void authenticate(void);
         void open_session(void);
         void close_session(void);
@@ -79,6 +84,11 @@ namespace PAM {
         void delenv(const std::string& key);
         const char* getenv(const std::string& key);
         char** getenvlist(void);
+
+    private:
+        // Explicitly disable copy constructor and copy assignment
+        Authenticator(const PAM::Authenticator&);
+        Authenticator& operator=(const PAM::Authenticator&);
     };
 };
 
