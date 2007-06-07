@@ -25,6 +25,7 @@
 #include "app.h"
 #include "numlock.h"
 
+
 #ifdef HAVE_SHADOW
 #include <shadow.h>
 #endif
@@ -48,13 +49,13 @@ int conv(int num_msg, const struct pam_message **msg,
                     case Panel::Suspend:
                     case Panel::Halt:
                     case Panel::Reboot:
-                        resp[i]->resp=x_strdup("root");
+                        resp[i]->resp=strdup("root");
                         break;
 
                     case Panel::Console:
                     case Panel::Exit:
                     case Panel::Login:
-                        resp[i]->resp=x_strdup(panel->GetName().c_str());
+                        resp[i]->resp=strdup(panel->GetName().c_str());
                         break;
                 }
                 break;
@@ -70,7 +71,7 @@ int conv(int num_msg, const struct pam_message **msg,
 
                     default:
                         panel->EventHandler(Panel::Get_Passwd);
-                        resp[i]->resp=x_strdup(panel->GetPasswd().c_str());
+                        resp[i]->resp=strdup(panel->GetPasswd().c_str());
                         break;
                 }
                 break;
