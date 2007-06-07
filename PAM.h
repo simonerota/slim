@@ -11,7 +11,10 @@
 #define _PAM_H_
 #include <string>
 #include <security/pam_appl.h>
+
+#ifdef __LIBPAM_VERSION
 #include <security/pam_misc.h>
+#endif
 
 namespace PAM {
     class Exception{
